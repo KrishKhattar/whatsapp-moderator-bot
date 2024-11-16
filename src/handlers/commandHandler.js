@@ -25,7 +25,7 @@ export const commandHandler = async (client, message) => {
       break;
     default:
       client.sendMessage(
-        message.reply,
+        message.from,
         "Unknown command. Type !help for a list of commands."
       );
   }

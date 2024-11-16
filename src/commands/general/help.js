@@ -8,7 +8,7 @@ const help = async (client, message) => {
   5. !mentionAll - Mention everyone in the group.
   6. !help - Display this help message.
     `;
-  await client.sendMessage(message.reply, helpMessage);
+  await client.sendMessage(message.from, helpMessage);
 };
 
 export default help;

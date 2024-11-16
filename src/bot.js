@@ -1,9 +1,10 @@
 import qrcode from "qrcode-terminal";
-import { Client, LocalAuth } from "whatsapp-web.js";
+import whatsappWeb from "whatsapp-web.js";
 import handleMessage from "./handlers/messageHandler.js";
 
+const { Client, LocalAuth } = whatsappWeb;
 const client = new Client({
-  authStrategy: LocalAuth(),
+  authStrategy: new LocalAuth(),
 });
 
 client.on("qr", (qr) => {
@@ -13,12 +14,17 @@ client.on("qr", (qr) => {
 client.on("ready", () => {
   console.log("WhatsApp bot is ready!");
 
-  client.on("disconnected", (reason) => {
-    console.log("Client disconnected:", reason);
-  });
-
   const botUserId = client.info.wid._serialized;
   console.log("Bot user ID:", botUserId);
+});
+
+client.on("disconnected", (reason) => {
+  console.log("Client disconnected:", reason);
+});
+
+client.on("call", (call) => {
+  console.log("Incoming Call: ", call);
+  call.reject();
 });
 
 client.on("message", (message) => {

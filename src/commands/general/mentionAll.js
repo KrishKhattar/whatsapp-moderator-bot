@@ -7,7 +7,7 @@ const mentionAll = async (client, message) => {
   );
   const mentionText = mentions.map((id) => `@${id.split("@")[0]}`).join(" ");
 
-  await client.sendMessage(message.reply, mentionText, { mentions });
+  await client.sendMessage(message.from, mentionText, { mentions });
 };
 
 export default mentionAll;
