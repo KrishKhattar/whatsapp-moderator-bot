@@ -12,7 +12,7 @@ const promote = async (client, message) => {
     await client.sendMessage(message.from, "Command available only to admins.");
     return;
   }
-
+  const botId = client.info.wid._serialized;
   const mentionedUsers = message.mentionedIds;
 
   if (mentionedUsers.length === 0) {
@@ -24,12 +24,26 @@ const promote = async (client, message) => {
   }
 
   for (let userId of mentionedUsers) {
-    await chat.promoteParticipants([userId]);
-    await client.sendMessage(
-      message.from,
-      `@${userId.split("@")[0]} has been promoted to admin.`,
-      { mentions: [userId] }
-    );
+    if (userId === botId) {
+      await client.sendMessage(message.from, `¯\_(ツ)_/¯`);
+      return;
+    }
+
+    const userIsAdmin = await isAdmin(chat, userId);
+    if (!userIsAdmin) {
+      await chat.promoteParticipants([userId]);
+      await client.sendMessage(
+        message.from,
+        `@${userId.split("@")[0]} has been promoted to admin.`,
+        { mentions: [userId] }
+      );
+    } else {
+      await client.sendMessage(
+        message.from,
+        `@${userId.split("@")[0]} is already an admin.`,
+        { mentions: [userId] }
+      );
+    }
   }
 };
 

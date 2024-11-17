@@ -12,10 +12,25 @@ const kick = async (client, message) => {
     await client.sendMessage(message.from, "Command available only to admins.");
     return;
   }
-
+  const botId = client.info.wid._serialized;
   const mentionedUsers = message.mentionedIds;
+
+  if (mentionedUsers.length === 0) {
+    await client.sendMessage(
+      message.from,
+      "Please mention the user(s) to kick."
+    );
+    return;
+  }
+
   for (let userId of mentionedUsers) {
+    if (userId === botId) {
+      await client.sendMessage(message.from, `¯\_(ツ)_/¯`);
+      return;
+    }
+
     const isTargetAdmin = await isAdmin(chat, userId);
+
     if (isTargetAdmin) {
       await client.sendMessage(
         message.from,

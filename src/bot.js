@@ -24,7 +24,7 @@ client.on("disconnected", (reason) => {
 
 client.on("call", (call) => {
   console.log("Incoming Call: ", call);
-  call.reject();
+  call.reject;
 });
 
 client.on("message", (message) => {

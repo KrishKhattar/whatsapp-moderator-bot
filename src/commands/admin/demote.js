@@ -14,13 +14,39 @@ const demote = async (client, message) => {
   }
 
   const mentionedUsers = message.mentionedIds;
-  for (let userId of mentionedUsers) {
-    await chat.demoteParticipants([userId]);
+
+  if (mentionedUsers.length === 0) {
     await client.sendMessage(
       message.from,
-      `@${userId.split("@")[0]} has been demoted.`,
-      { mentions: [userId] }
+      "Please mention the user(s) to demote."
     );
+    return;
+  }
+
+  const botId = client.info.wid._serialized;
+
+  for (let userId of mentionedUsers) {
+    if (userId === botId) {
+      await client.sendMessage(message.from, `¯\_(ツ)_/¯`);
+      return;
+    }
+
+    const userIsAdmin = await isAdmin(chat, userId);
+
+    if (!userIsAdmin) {
+      await client.sendMessage(
+        message.from,
+        `@${userId.split("@")[0]} is not an admin.`,
+        { mentions: [userId] }
+      );
+    } else {
+      await chat.demoteParticipants([userId]);
+      await client.sendMessage(
+        message.from,
+        `@${userId.split("@")[0]} has been demoted.`,
+        { mentions: [userId] }
+      );
+    }
   }
 };
 
