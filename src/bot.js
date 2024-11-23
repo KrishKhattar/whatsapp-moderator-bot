@@ -1,6 +1,11 @@
 import qrcode from "qrcode-terminal";
 import whatsappWeb from "whatsapp-web.js";
 import handleMessage from "./handlers/messageHandler.js";
+import dotenv from "dotenv";
+
+dotenv.config({
+  path: "./.env",
+});
 
 const { Client, LocalAuth } = whatsappWeb;
 const client = new Client({
@@ -24,7 +29,7 @@ client.on("disconnected", (reason) => {
 
 client.on("call", (call) => {
   console.log("Incoming Call: ", call);
-  call.reject;
+  call.reject();
 });
 
 client.on("message", (message) => {
