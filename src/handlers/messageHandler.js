@@ -1,11 +1,17 @@
 import { commandHandler } from "./commandHandler.js";
 //import isUserSpamming from "../utils/spamDetector.js";
 import { containsCussWords } from "../utils/badwordsfilter.js";
+import { addMessageToHistory } from "../utils/chathistory.js";
 
 const userWarnings = {};
 
 const messageHandler = async (client, message) => {
   const senderId = message.author || message.from;
+
+  addMessageToHistory(message.from, {
+    author: message.author,
+    body: message.body,
+  });
 
   if (message.body.startsWith("!")) {
     await commandHandler(client, message);

@@ -20,6 +20,9 @@ export const commandHandler = async (client, message) => {
     case "mentionAll":
       await generalCommands.mentionAll(client, message);
       break;
+    case "summarize":
+      await generalCommands.summarize(client, message);
+      break;
     case "help":
       await generalCommands.help(client, message);
       break;
