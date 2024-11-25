@@ -1,16 +1,16 @@
 const chatHistories = new Map(); // Use a Map to store chat history by chat ID
 
-export const addMessageToHistory = (chatId, message) => {
-  if (!chatHistories.has(chatId)) {
-    chatHistories.set(chatId, []);
+export const addMessageToHistory = (client, message) => {
+  if (!chatHistories.has(client)) {
+    chatHistories.set(client, []);
   }
-  chatHistories.get(chatId).push(message);
+  chatHistories.get(client).push(message);
 };
 
-export const getChatHistory = (chatId) => {
-  return chatHistories.get(chatId) || [];
+export const getChatHistory = (client) => {
+  return chatHistories.get(client) || [];
 };
 
-export const clearChatHistory = (chatId) => {
-  chatHistories.delete(chatId);
+export const clearChatHistory = (client) => {
+  chatHistories.delete(client);
 };

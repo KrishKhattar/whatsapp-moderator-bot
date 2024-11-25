@@ -26,6 +26,9 @@ export const commandHandler = async (client, message) => {
     case "help":
       await generalCommands.help(client, message);
       break;
+    case "prompt":
+      await generalCommands.prompt(client, message);
+      break;
     default:
       client.sendMessage(
         message.from,
