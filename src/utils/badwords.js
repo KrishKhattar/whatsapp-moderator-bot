@@ -1,5 +1,4 @@
 export const cussWords = [
-  "nig",
   "nazi",
   "jew",
   "fag",
@@ -17,8 +16,6 @@ export const cussWords = [
   "coon",
   "c00n",
   "c o o n",
-  "damm",
-  "d4mm",
   "h3ll",
   "d-a-m-m",
   "d a m m ",

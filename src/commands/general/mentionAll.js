@@ -21,7 +21,12 @@ const mentionAll = async (client, message) => {
   );
   const mentionText = mentions.map((id) => `@${id.split("@")[0]}`).join(" ");
 
-  await client.sendMessage(message.from, mentionText, { mentions });
+  const sentMessage = await client.sendMessage(message.from, mentionText, { mentions });
+  
+  // Delete the mention message after 1 second
+  setTimeout(async () => {
+    await sentMessage.delete(true);
+  }, 1000);
 };
 
 export default mentionAll;

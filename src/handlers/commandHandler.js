@@ -29,6 +29,9 @@ export const commandHandler = async (client, message) => {
     case "prompt":
       await generalCommands.prompt(client, message);
       break;
+    case "askGemini":
+      await generalCommands.askGeminiCommand(client, message);
+      break;
     default:
       client.sendMessage(
         message.from,
