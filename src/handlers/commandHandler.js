@@ -32,6 +32,9 @@ export const commandHandler = async (client, message) => {
     case "askGemini":
       await generalCommands.askGeminiCommand(client, message);
       break;
+    case "google":
+      await generalCommands.googleSearch(client, message);
+      break; 
     default:
       client.sendMessage(
         message.from,

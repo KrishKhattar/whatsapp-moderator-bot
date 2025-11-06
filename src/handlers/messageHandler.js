@@ -1,6 +1,6 @@
 import { commandHandler } from "./commandHandler.js";
 //import isUserSpamming from "../utils/spamDetector.js";
-import { containsCussWords } from "../utils/badwordsfilter.js";
+//import { containsCussWords } from "../utils/badwordsfilter.js";
 import { addMessageToHistory } from "../utils/chathistory.js";
 
 const userWarnings = {};
@@ -28,29 +28,29 @@ const messageHandler = async (client, message) => {
   //   return;
   // }
 
-  if (containsCussWords(message.body)) {
-    console.log("Deleting offensive message:", message.id);
-    await message.delete(true);
-    console.log("Message deleted successfully.");
+  // if (containsCussWords(message.body)) {
+  //   console.log("Deleting offensive message:", message.id);
+  //   await message.delete(true);
+  //   console.log("Message deleted successfully.");
 
-    if (!userWarnings[senderId]) {
-      userWarnings[senderId] = 1; // First warning
-    } else {
-      userWarnings[senderId] += 1; // Increment warning count
-    }
+  //   if (!userWarnings[senderId]) {
+  //     userWarnings[senderId] = 1; // First warning
+  //   } else {
+  //     userWarnings[senderId] += 1; // Increment warning count
+  //   }
 
-    // Send a warning message
-    await client.sendMessage(
-      message.from,
-      `@${
-        senderId.split("@")[0]
-      }, you have been warned for using offensive language. You now have ${
-        userWarnings[senderId]
-      } warning(s).`,
-      { mentions: [senderId] }
-    );
-    return;
-  }
+  //   // Send a warning message
+  //   await client.sendMessage(
+  //     message.from,
+  //     `@${
+  //       senderId.split("@")[0]
+  //     }, you have been warned for using offensive language. You now have ${
+  //       userWarnings[senderId]
+  //     } warning(s).`,
+  //     { mentions: [senderId] }
+  //   );
+  //   return;
+  // }
 
   // Check if the user has reached the warning limit
   // if (userWarnings[senderId] > 1) {

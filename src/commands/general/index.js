@@ -4,3 +4,4 @@ export { default as help } from "./help.js";
 export { default as summarize } from "./summarize.js";
 export { default as prompt } from "./prompt.js";
 export { default as askGeminiCommand } from "./askgemini.js";
+export { default as googleSearch } from "./googleSearch.js";
