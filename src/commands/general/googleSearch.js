@@ -1,37 +1,34 @@
-import axios from 'axios';
+import axios from "axios";
 
-const googleSearch = async (client, message) => {
-  try {
-    const query = message.body.slice(message.body.indexOf(" ") + 1).trim();
-    if (!query) {
-      await client.sendMessage(message.from, "Please provide a search query. Usage: !google <query>");
+export default {
+  name: "google",
+  category: "ai",
+  description: "Top 5 results, because typing in a browser is hard",
+  usage: "<query>",
+  requiresArgs: true,
+  cooldown: { seconds: 20, scope: "user" },
+  execute: async ({ args, reply }) => {
+    const query = args.join(" ");
+    const apiKey = process.env.SERPAPI_KEY;
+    if (!apiKey) {
+      await reply("Google search isn't set up yet (missing SERPAPI_KEY).");
       return;
     }
 
-    const apiKey = process.env.SERPAPI_KEY;
-    const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${apiKey}`;
-
-    const response = await axios.get(url);
+    const response = await axios.get("https://serpapi.com/search.json", {
+      params: { q: query, api_key: apiKey },
+      timeout: 15_000,
+    });
     const results = response.data.organic_results?.slice(0, 5) || [];
 
     if (results.length === 0) {
-      await client.sendMessage(message.from, "No results found for your search.");
+      await reply("No results found. The internet has failed you. 🫠");
       return;
     }
 
-    let responseText = `*Google Search Results for "${query}":*\n\n`;
-    results.forEach((item, index) => {
-      responseText += `*${index + 1}. ${item.title}*\n${item.link}\n${item.snippet}\n\n`;
-    });
-
-    await client.sendMessage(message.from, responseText);
-  } catch (error) {
-    console.error("Google search error:", error);
-    await client.sendMessage(
-      message.from,
-      "Failed to perform search. Please try again later."
+    const lines = results.map(
+      (item, i) => `*${i + 1}. ${item.title}*\n${item.link}\n${item.snippet ?? ""}`
     );
-  }
+    await reply(`*Google results for "${query}":*\n\n${lines.join("\n\n")}`);
+  },
 };
-
-export default googleSearch;

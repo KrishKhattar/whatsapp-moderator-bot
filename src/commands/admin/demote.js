@@ -1,53 +1,26 @@
-import isAdmin from "../../utils/isAdmin.js";
+import isAdmin, { isSameUser } from "../../utils/isAdmin.js";
+import { tag } from "../../utils/mentionUser.js";
 
-const demote = async (client, message) => {
-  const chat = await client.getChatById(message.from);
-  const senderId = message.author || message.from;
-  if (!chat.isGroup) return;
+export default {
+  name: "demote",
+  category: "admin",
+  description: "Take the crown back 😬",
+  usage: "@user",
+  adminOnly: true,
+  groupOnly: true,
+  requiresMention: true,
+  execute: async ({ client, chat, message, reply }) => {
+    const botId = client.info.wid._serialized;
 
-  const senderIsAdmin = await isAdmin(chat, senderId);
-
-  if (!senderIsAdmin) {
-    // If the sender is not an admin, return a message saying only admins can use this command
-    await client.sendMessage(message.from, "Command available only to admins.");
-    return;
-  }
-
-  const mentionedUsers = message.mentionedIds;
-
-  if (mentionedUsers.length === 0) {
-    await client.sendMessage(
-      message.from,
-      "Please mention the user(s) to demote."
-    );
-    return;
-  }
-
-  const botId = client.info.wid._serialized;
-
-  for (let userId of mentionedUsers) {
-    if (userId === botId) {
-      await client.sendMessage(message.from, `¯\_(ツ)_/¯`);
-      return;
+    for (const userId of message.mentionedIds) {
+      if (await isSameUser(client, userId, botId)) {
+        await reply("Nice try. ¯\\_(ツ)_/¯");
+      } else if (!(await isAdmin(chat, userId))) {
+        await reply(`${tag(userId)} is not an admin.`, { mentions: [userId] });
+      } else {
+        await chat.demoteParticipants([userId]);
+        await reply(`${tag(userId)} has been demoted.`, { mentions: [userId] });
+      }
     }
-
-    const userIsAdmin = await isAdmin(chat, userId);
-
-    if (!userIsAdmin) {
-      await client.sendMessage(
-        message.from,
-        `@${userId.split("@")[0]} is not an admin.`,
-        { mentions: [userId] }
-      );
-    } else {
-      await chat.demoteParticipants([userId]);
-      await client.sendMessage(
-        message.from,
-        `@${userId.split("@")[0]} has been demoted.`,
-        { mentions: [userId] }
-      );
-    }
-  }
+  },
 };
-
-export default demote;

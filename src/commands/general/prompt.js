@@ -1,17 +1,14 @@
 import { promptCommand } from "../../utils/geminiconfig.js";
 
-const prompt = async (client, message) => {
-  try {
-    const userPrompt = message.body.slice(message.body.indexOf(" ") + 1).trim();
-    const response = await promptCommand(userPrompt);
-    await client.sendMessage(message.from, response);
-  } catch (error) {
-    console.error("Error handling prompt command:", error);
-    await client.sendMessage(
-      message.from,
-      "There was an error processing your prompt."
-    );
-  }
+export default {
+  name: "prompt",
+  category: "ai",
+  description: "Talk to me. I *will* roast you.",
+  usage: "<text>",
+  requiresArgs: true,
+  cooldown: { seconds: 15, scope: "user" },
+  execute: async ({ args, reply }) => {
+    const response = await promptCommand(args.join(" "));
+    await reply(response);
+  },
 };
-
-export default prompt;

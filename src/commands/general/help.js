@@ -1,18 +1,49 @@
-const help = async (client, message) => {
-  const helpMessage = `
-  *Commands:*
-  1. !promote [tag user] - Promote a user to admin.
-  2. !demote [tag user] - Demote a user from admin.
-  3. !kick [tag user] - Remove a user from the group.
-  4. !ping - Check bot status.
-  5. !mentionAll - Mention everyone in the group.
-  6. !prompt - Prompt the AI with a message.
-  7. !summarize - Summarize the recent chats.
-  8. !help - Display this help message.
-  
-This bot consists of 7 commands \n_Thala for a Reason_
-    `;
-  await client.sendMessage(message.from, helpMessage);
+// !help is generated from the command registry, so it never goes out of date.
+
+const SECTIONS = [
+  { category: "general", title: "*The basics* 🧑‍🤝‍🧑" },
+  { category: "ai", title: "*Big brain stuff* 🧠" },
+  { category: "admin", title: "*For the chosen ones (admins)* 👑" },
+  { category: "moderation", title: "*Moderation (admins)* 🛡️" },
+];
+
+const formatCommand = (prefix, command) => {
+  const lines = [];
+  const usage = command.usage ? ` ${command.usage}` : "";
+  lines.push(`${prefix}${command.name}${usage} - ${command.description}`);
+  for (const [sub, description] of command.subcommands || []) {
+    lines.push(`${prefix}${command.name} ${sub} - ${description}`);
+  }
+  return lines.join("\n");
 };
 
-export default help;
+export const buildHelpText = (commands, prefix = "!") => {
+  const sections = SECTIONS.map(({ category, title }) => {
+    const inSection = commands.filter((c) => c.category === category);
+    if (inSection.length === 0) return null;
+    return `${title}\n${inSection.map((c) => formatCommand(prefix, c)).join("\n")}`;
+  }).filter(Boolean);
+
+  const count = commands.length;
+  const footer =
+    count === 7
+      ? "That's exactly 7 commands. Coincidence? I think not."
+      : `That's ${count} commands. 7 would've been cooler, but here we are.`;
+
+  return [
+    "🤖 *Reporting for duty. Here's what I can do:*",
+    ...sections,
+    `${footer}\n_Thala for a Reason_ 🏏`,
+  ].join("\n\n");
+};
+
+export default {
+  name: "help",
+  aliases: ["commands"],
+  category: "general",
+  description: "You're looking at it, genius",
+  cooldown: { seconds: 10, scope: "user" },
+  execute: async ({ reply, commands, prefix }) => {
+    await reply(buildHelpText(commands, prefix));
+  },
+};

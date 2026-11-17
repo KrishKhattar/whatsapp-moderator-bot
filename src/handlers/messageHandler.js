@@ -1,72 +1,36 @@
+import botConfig from "../config/botConfig.js";
 import { commandHandler } from "./commandHandler.js";
-//import isUserSpamming from "../utils/spamDetector.js";
-//import { containsCussWords } from "../utils/badwordsfilter.js";
 import { addMessageToHistory } from "../utils/chathistory.js";
+import { moderateMessage } from "../moderation/moderator.js";
+import { increment } from "../utils/stats.js";
 
-const userWarnings = {};
+const isGroupMessage = (message) => message.from.endsWith("@g.us");
 
 const messageHandler = async (client, message) => {
-  const senderId = message.author || message.from;
+  if (isGroupMessage(message)) {
+    increment(message.from, "messages_seen");
+    const chat = await message.getChat();
 
-  addMessageToHistory(message.from, {
-    author: message.author,
-    body: message.body,
-  });
+    try {
+      const actioned = await moderateMessage(client, chat, message);
+      if (actioned) return; // flagged messages don't reach history or commands
+    } catch (error) {
+      // Moderation must never stop the bot from working.
+      console.error("Moderation error:", error);
+    }
 
-  if (message.body.startsWith("!")) {
-    await commandHandler(client, message);
+    if (message.body && !message.body.startsWith(botConfig.prefix)) {
+      addMessageToHistory(message.from, {
+        authorId: message.author,
+        name: message._data?.notifyName || null,
+        body: message.body,
+      });
+    }
   }
 
-  // const spamCheck = isUserSpamming(client, message);
-
-  // if (spamCheck.isSpam) {
-  //   await client.sendMessage(
-  //     message.from,
-  //     `Your message was flagged as spam: ${spamCheck.reason}`
-  //   );
-  //   message.delete(true);
-  //   return;
-  // }
-
-  // if (containsCussWords(message.body)) {
-  //   console.log("Deleting offensive message:", message.id);
-  //   await message.delete(true);
-  //   console.log("Message deleted successfully.");
-
-  //   if (!userWarnings[senderId]) {
-  //     userWarnings[senderId] = 1; // First warning
-  //   } else {
-  //     userWarnings[senderId] += 1; // Increment warning count
-  //   }
-
-  //   // Send a warning message
-  //   await client.sendMessage(
-  //     message.from,
-  //     `@${
-  //       senderId.split("@")[0]
-  //     }, you have been warned for using offensive language. You now have ${
-  //       userWarnings[senderId]
-  //     } warning(s).`,
-  //     { mentions: [senderId] }
-  //   );
-  //   return;
-  // }
-
-  // Check if the user has reached the warning limit
-  // if (userWarnings[senderId] > 1) {
-  //   const chat = await client.getChatById(message.from);
-  //   await chat.removeParticipants([senderId]); // Kick the user
-  //   await client.sendMessage(
-  //     message.from,
-  //     `@${
-  //       senderId.split("@")[0]
-  //     } has been kicked for exceeding the warning limit.`,
-  //     {
-  //       mentions: [senderId],
-  //     }
-  //   );
-
-  // Reset the user's warnings after kicking
-  //delete userWarnings[senderId];
+  if (message.body?.startsWith(botConfig.prefix)) {
+    await commandHandler(client, message);
+  }
 };
+
 export default messageHandler;
