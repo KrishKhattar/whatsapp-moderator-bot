@@ -1,0 +1,17 @@
+node_modules
+.git
+.github
+.wwebjs_auth
+.wwebjs_cache
+data
+test
+coverage
+.env
+.env.*
+!.env.example
+*.log
+Dockerfile
+docker-compose.yml
+.dockerignore
+README.md
+docs

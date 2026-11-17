@@ -1,0 +1,23 @@
+services:
+  bot:
+    build: .
+    image: whatsapp-moderator-bot
+    container_name: whatsapp-moderator-bot
+    restart: unless-stopped
+    init: true # forwards signals so Ctrl+C / docker stop shut down cleanly
+    env_file: .env
+    volumes:
+      - bot-data:/app/data # SQLite database
+      - wwebjs-auth:/app/.wwebjs_auth # WhatsApp login (scan the QR once)
+      - wwebjs-cache:/app/.wwebjs_cache
+    shm_size: 512mb # Chromium needs more shared memory than Docker's 64MB default
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  bot-data:
+  wwebjs-auth:
+  wwebjs-cache:
